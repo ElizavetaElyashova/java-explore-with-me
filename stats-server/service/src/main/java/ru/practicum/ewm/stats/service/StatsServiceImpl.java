@@ -28,13 +28,13 @@ public class StatsServiceImpl implements StatsService {
         LocalDateTime endDateTime = LocalDateTime.parse(end, StatsMapper.getFormatter());
         List<ViewStats> stats;
         if (unique) {
-            if (uris.isEmpty()) {
+            if (uris == null || uris.isEmpty()) {
                 stats = statsRepository.getStatsUniqueIpsForAll(startDateTime, endDateTime);
             } else {
                 stats = statsRepository.getStatsUniqueIps(startDateTime, endDateTime, uris);
             }
         } else {
-            if (uris.isEmpty()) {
+            if (uris == null || uris.isEmpty()) {
                 stats = statsRepository.getStatsForAll(startDateTime, endDateTime);
             } else {
                 stats = statsRepository.getStats(startDateTime, endDateTime, uris);
