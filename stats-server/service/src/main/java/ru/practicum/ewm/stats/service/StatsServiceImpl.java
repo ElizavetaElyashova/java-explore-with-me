@@ -9,6 +9,7 @@ import ru.practicum.ewm.stats.StatsRepository;
 import ru.practicum.ewm.stats.model.ViewStats;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -27,12 +28,21 @@ public class StatsServiceImpl implements StatsService {
         LocalDateTime endDateTime = LocalDateTime.parse(end, StatsMapper.getFormatter());
         List<ViewStats> stats;
         if (unique) {
-            stats = statsRepository.getStatsUniqueIps(startDateTime, endDateTime, uris);
+            if (uris.isEmpty()) {
+                stats = statsRepository.getStatsUniqueIpsForAll(startDateTime, endDateTime);
+            } else {
+                stats = statsRepository.getStatsUniqueIps(startDateTime, endDateTime, uris);
+            }
         } else {
-            stats = statsRepository.getStats(startDateTime, endDateTime, uris);
+            if (uris.isEmpty()) {
+                stats = statsRepository.getStatsForAll(startDateTime, endDateTime);
+            } else {
+                stats = statsRepository.getStats(startDateTime, endDateTime, uris);
+            }
         }
         return stats.stream()
                 .map(StatsMapper::toViewStatsDto)
+                .sorted(Comparator.comparing(ViewStatsDto::getHits).reversed())
                 .toList();
     }
 }

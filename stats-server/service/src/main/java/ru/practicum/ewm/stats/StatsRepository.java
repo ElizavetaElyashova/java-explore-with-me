@@ -21,6 +21,14 @@ public interface StatsRepository extends JpaRepository<EndpointHit, Long> {
     List<ViewStats> getStats(LocalDateTime start, LocalDateTime end, List<String> uris);
 
     @Query("select new ru.practicum.ewm.stats.model.ViewStats" +
+            "(eh.app, eh.uri, count(eh.ip)) " +
+            "from EndpointHit eh " +
+            "where eh.timestamp > ?1 " +
+            "and eh.timestamp < ?2 " +
+            "group by eh.app, eh.uri")
+    List<ViewStats> getStatsForAll(LocalDateTime start, LocalDateTime end);
+
+    @Query("select new ru.practicum.ewm.stats.model.ViewStats" +
             "(eh.app, eh.uri, count(distinct eh.ip)) " +
             "from EndpointHit eh " +
             "where eh.timestamp > ?1 " +
@@ -28,4 +36,12 @@ public interface StatsRepository extends JpaRepository<EndpointHit, Long> {
             "and eh.uri in ?3 " +
             "group by eh.app, eh.uri")
     List<ViewStats> getStatsUniqueIps(LocalDateTime start, LocalDateTime end, List<String> uris);
+
+    @Query("select new ru.practicum.ewm.stats.model.ViewStats" +
+            "(eh.app, eh.uri, count(distinct eh.ip)) " +
+            "from EndpointHit eh " +
+            "where eh.timestamp > ?1 " +
+            "and eh.timestamp < ?2 " +
+            "group by eh.app, eh.uri")
+    List<ViewStats> getStatsUniqueIpsForAll(LocalDateTime start, LocalDateTime end);
 }
